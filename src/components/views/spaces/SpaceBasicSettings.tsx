@@ -1,5 +1,5 @@
 /*
-Copyright 2021 The Matrix.org Foundation C.I.C.
+Copyright 2021 - 2023 The Matrix.org Foundation C.I.C.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ export const SpaceAvatar: React.FC<Pick<IProps, "avatarUrl" | "avatarDisabled" |
     avatarDisabled = false,
     setAvatar,
 }) => {
-    const avatarUploadRef = useRef<HTMLInputElement>();
+    const avatarUploadRef = useRef<HTMLInputElement>(null);
     const [avatar, setAvatarDataUrl] = useState(avatarUrl); // avatar data url cache
 
     let avatarSection;

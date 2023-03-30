@@ -308,7 +308,7 @@ export const useRovingTabIndex = <T extends HTMLElement>(
     inputRef?: RefObject<T>,
 ): [FocusHandler, boolean, RefObject<T>] => {
     const context = useContext(RovingTabIndexContext);
-    let ref = useRef<T>(null);
+    let ref: RefObject<T> = useRef<T>(null);
 
     if (inputRef) {
         // if we are given a ref, use it instead of ours

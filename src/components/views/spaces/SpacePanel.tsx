@@ -1,5 +1,5 @@
 /*
-Copyright 2021 - 2022 The Matrix.org Foundation C.I.C.
+Copyright 2021 - 2023 The Matrix.org Foundation C.I.C.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -331,9 +331,11 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
 
 const SpacePanel: React.FC = () => {
     const [isPanelCollapsed, setPanelCollapsed] = useState(true);
-    const ref = useRef<HTMLDivElement>();
+    const ref = useRef<HTMLDivElement>(null);
+
     useLayoutEffect(() => {
-        UIStore.instance.trackElementDimensions("SpacePanel", ref.current);
+        // ref.current should always be set in useLayoutEffect
+        UIStore.instance.trackElementDimensions("SpacePanel", ref.current!);
         return () => UIStore.instance.stopTrackingElementDimensions("SpacePanel");
     }, []);
 

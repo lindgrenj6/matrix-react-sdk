@@ -1,5 +1,5 @@
 /*
-Copyright 2021 The Matrix.org Foundation C.I.C.
+Copyright 2021 - 2023 The Matrix.org Foundation C.I.C.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -212,9 +212,9 @@ const SpaceCreateMenu: React.FC<{
     const [busy, setBusy] = useState<boolean>(false);
 
     const [name, setName] = useState("");
-    const spaceNameField = useRef<Field>();
+    const spaceNameField = useRef<Field>(null);
     const [alias, setAlias] = useState("");
-    const spaceAliasField = useRef<RoomAliasField>();
+    const spaceAliasField = useRef<RoomAliasField | null>(null);
     const [avatar, setAvatar] = useState<File | undefined>(undefined);
     const [topic, setTopic] = useState<string>("");
 
