@@ -22,7 +22,7 @@ import React, {
     InputHTMLAttributes,
     LegacyRef,
     forwardRef,
-    RefObject,
+    ForwardedRef,
 } from "react";
 import classNames from "classnames";
 import { Room, RoomEvent } from "matrix-js-sdk/src/models/room";
@@ -48,6 +48,7 @@ import SpaceContextMenu from "../context_menus/SpaceContextMenu";
 import AccessibleTooltipButton from "../elements/AccessibleTooltipButton";
 import { useRovingTabIndex } from "../../../accessibility/RovingTabIndex";
 import { KeyBindingAction } from "../../../accessibility/KeyboardShortcuts";
+import { useForwardedRef } from "../../../hooks/useForwardedRef";
 
 interface IButtonProps extends Omit<ComponentProps<typeof AccessibleTooltipButton>, "title" | "onClick"> {
     space?: Room;
@@ -79,9 +80,10 @@ export const SpaceButton = forwardRef<HTMLElement, IButtonProps>(
             ContextMenuComponent,
             ...props
         },
-        ref: RefObject<HTMLElement>,
+        ref: ForwardedRef<HTMLElement>,
     ) => {
-        const [menuDisplayed, handle, openMenu, closeMenu] = useContextMenu<HTMLElement>(ref);
+        const refObj = useForwardedRef(ref);
+        const [menuDisplayed, handle, openMenu, closeMenu] = useContextMenu<HTMLElement>(refObj);
         const [onFocus, isActive] = useRovingTabIndex(handle);
         const tabIndex = isActive ? 0 : -1;
 
@@ -104,6 +106,9 @@ export const SpaceButton = forwardRef<HTMLElement, IButtonProps>(
             const jumpToNotification = (ev: MouseEvent): void => {
                 ev.stopPropagation();
                 ev.preventDefault();
+
+                if (!space) return;
+
                 SpaceStore.instance.setActiveRoomInSpace(spaceKey ?? space.roomId);
             };
 
@@ -122,7 +127,7 @@ export const SpaceButton = forwardRef<HTMLElement, IButtonProps>(
         }
 
         let contextMenu: JSX.Element | undefined;
-        if (menuDisplayed && handle.current && ContextMenuComponent) {
+        if (space && menuDisplayed && handle.current && ContextMenuComponent) {
             contextMenu = (
                 <ContextMenuComponent
                     {...toRightOf(handle.current.getBoundingClientRect(), 0)}
@@ -132,9 +137,18 @@ export const SpaceButton = forwardRef<HTMLElement, IButtonProps>(
             );
         }
 
-        const viewSpaceHome = (): void =>
+        const viewSpaceHome = (): void => {
+            if (!space) return;
+
             defaultDispatcher.dispatch({ action: Action.ViewRoom, room_id: space.roomId });
-        const activateSpace = (): void => SpaceStore.instance.setActiveSpace(spaceKey ?? space.roomId);
+        };
+
+        const activateSpace = (): void => {
+            if (!space) return;
+
+            SpaceStore.instance.setActiveSpace(spaceKey ?? space.roomId);
+        };
+
         const onClick = props.onClick ?? (selected && space ? viewSpaceHome : activateSpace);
 
         return (

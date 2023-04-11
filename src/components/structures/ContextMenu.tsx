@@ -614,8 +614,7 @@ export const useContextMenu = <T extends any = HTMLElement>(inputRef?: RefObject
         setIsOpen(false);
     };
 
-    const hasButton = typeof button !== "function" && button.current;
-    return [hasButton ? isOpen : false, button, open, close, setIsOpen];
+    return [button.current ? isOpen : false, button, open, close, setIsOpen];
 };
 
 // XXX: Deprecated, used only for dynamic Tooltips. Avoid using at all costs.
