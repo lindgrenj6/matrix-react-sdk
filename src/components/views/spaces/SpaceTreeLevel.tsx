@@ -107,9 +107,11 @@ export const SpaceButton = forwardRef<HTMLElement, IButtonProps>(
                 ev.stopPropagation();
                 ev.preventDefault();
 
-                if (!space) return;
+                const spaceKeyOrId = spaceKey ?? space?.roomId;
 
-                SpaceStore.instance.setActiveRoomInSpace(spaceKey ?? space.roomId);
+                if (spaceKeyOrId) {
+                    SpaceStore.instance.setActiveRoomInSpace(spaceKeyOrId);
+                }
             };
 
             notifBadge = (
@@ -144,9 +146,11 @@ export const SpaceButton = forwardRef<HTMLElement, IButtonProps>(
         };
 
         const activateSpace = (): void => {
-            if (!space) return;
+            const spaceKeyOrId = spaceKey ?? space?.roomId;
 
-            SpaceStore.instance.setActiveSpace(spaceKey ?? space.roomId);
+            if (spaceKeyOrId) {
+                SpaceStore.instance.setActiveSpace(spaceKeyOrId);
+            }
         };
 
         const onClick = props.onClick ?? (selected && space ? viewSpaceHome : activateSpace);
