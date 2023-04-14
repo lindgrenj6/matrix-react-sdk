@@ -31,6 +31,7 @@ import Modal from "../Modal";
 import InteractiveAuthDialog from "../components/views/dialogs/InteractiveAuthDialog";
 import { _t } from "../languageHandler";
 import { SdkContextClass } from "../contexts/SDKContext";
+import { asyncSome } from "../utils/arrays";
 
 export enum Phase {
     Loading = 0,
@@ -108,15 +109,15 @@ export class SetupEncryptionStore extends EventEmitter {
         // do we have any other verified devices which are E2EE which we can verify against?
         const dehydratedDevice = await cli.getDehydratedDevice();
         const ownUserId = cli.getUserId()!;
-        const crossSigningInfo = cli.getStoredCrossSigningForUser(ownUserId);
-        this.hasDevicesToVerifyAgainst = cli
-            .getStoredDevicesForUser(ownUserId)
-            .some(
-                (device) =>
-                    device.getIdentityKey() &&
-                    (!dehydratedDevice || device.deviceId != dehydratedDevice.device_id) &&
-                    crossSigningInfo?.checkDeviceTrust(crossSigningInfo, device, false, true).isCrossSigningVerified(),
-            );
+        this.hasDevicesToVerifyAgainst = await asyncSome(
+            cli.getStoredDevicesForUser(ownUserId),
+            async (device) =>
+                device.getIdentityKey() &&
+                (!dehydratedDevice || device.deviceId != dehydratedDevice.device_id) &&
+                (
+                    await cli.getCrypto()?.getDeviceVerificationStatus(ownUserId, device.deviceId)
+                )?.crossSigningVerified,
+        );
 
         this.phase = Phase.Intro;
         this.emit("update");
